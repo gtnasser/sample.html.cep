@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang=en>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="gtnasser@gmail.com">
+  <title>CEP Search</title>
+
+  <!-- Bootstrap core -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+  <style></style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="row">
+      <form id="form1" action="javascript:null"><!-- method="post" action="./?0-2.-form">-->
+
+        <div class="mb-3 form-group">
+          <label for="cep" class="form-label">CEP</label>
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" id="cep" value="04006002">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-primary" onclick="doCep();">Search</button>
+            </div>
+          </div>
+        </div>
+	
+        <div class="mb-3 form-group">
+          <label for="resp" class="form-label">Data (from VIACep service)</label>
+          <textarea class="form-control" id="resp" rows="12"></textarea>
+        </div>
+		
+      </form>
+    </div>
+
+  </div>
+
+
+<script>
+
+const doCep = () => {
+  const resp = document.getElementById('resp')
+  resp.innerHTML = ''
+
+  const cep = document.getElementById('cep').value.replace(/[^0-9]/g, '')
+  if(cep.length==8) {
+    const url = `https://viacep.com.br/ws/${cep}/json/`
+    fetch(url, {
+      method: 'GET',
+      mode: 'cors'
+    })
+    .catch((err) => {
+      console.log(JSON.stringify(err))
+      resp.innerHTML += JSON.stringify(err) + '\n'
+    })
+    .then(function(response) {
+      response.json().then(cep => {
+        // esta API sempre retorna ok==true
+        if (cep.erro) resp.innerHTML = 'CEP não localizado'
+        else resp.innerHTML = JSON.stringify(cep, null, 2)
+      })
+    })
+  } else {
+    resp.innerHTML = 'CEP inválido'
+  }
+
+}
+
+</script>
+
+  <!-- JavaScript Core Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+    crossorigin="anonymous"></script>
+
+</body>
+</html>
+
